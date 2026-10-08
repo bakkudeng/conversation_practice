@@ -78,6 +78,7 @@
       <button id="clearChatBtn" onclick="clearAllChat()" title="대화 내용 지우기" class="p-2.5 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-xl transition-all cursor-pointer">
         <i class="fa-regular fa-trash-can text-base"></i>
       </button>
+      <!-- 강제 onclick 사용으로 이벤트 리스너 실패 방지 -->
       <button id="openSettingsBtn" onclick="openSettings()" class="flex items-center gap-2 bg-slate-100 hover:bg-slate-200 text-slate-700 px-3.5 py-2 rounded-xl text-sm font-medium transition-all shadow-sm cursor-pointer">
         <i class="fa-solid fa-gear text-slate-500"></i>
         <span>설정</span>
@@ -142,7 +143,7 @@
     </div>
   </footer>
 
-  <!-- Settings Modal -->
+  <!-- Settings Modal (명시적 hidden 제어) -->
   <div id="settingsModal" class="hidden fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
     <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden border border-slate-100" id="settingsModalContent" onclick="event.stopPropagation()">
       <div class="px-5 py-4 border-b border-slate-100 flex items-center justify-between">
@@ -151,7 +152,7 @@
           <h2 class="font-bold text-slate-800 text-base">바쿠토쿠 설정</h2>
           <span class="bg-indigo-50 text-indigo-600 text-[10px] font-bold px-1.5 py-0.5 rounded border border-indigo-100">v0.1</span>
         </div>
-        <button onclick="closeSettings()" class="text-slate-400 hover:text-slate-600 p-1.5 rounded-lg cursor-pointer">
+        <button type="button" onclick="closeSettings()" class="text-slate-400 hover:text-slate-600 p-1.5 rounded-lg cursor-pointer">
           <i class="fa-solid fa-xmark text-lg"></i>
         </button>
       </div>
@@ -288,19 +289,14 @@
       de: { male: { display: 'Lukas (루카스)', name: 'Lukas' }, female: { display: 'Mia (미아)', name: 'Mia' } }
     };
 
-    // 로컬 스토리지 안전 접근
+    // 로컬 스토리지 안전 접근 (에러 발생해도 동작하도록 방어)
     function getStoredKey() {
-      try {
-        return localStorage.getItem('bakutoku_gemini_api_key') || '';
-      } catch (e) {
-        return '';
-      }
+      try { return localStorage.getItem('bakutoku_gemini_api_key') || ''; } 
+      catch (e) { return ''; }
     }
-
     function setStoredKey(key) {
-      try {
-        localStorage.setItem('bakutoku_gemini_api_key', key);
-      } catch (e) {}
+      try { localStorage.setItem('bakutoku_gemini_api_key', key); } 
+      catch (e) {}
     }
 
     // 전역 상태
@@ -329,54 +325,60 @@
       return langConfig[appState.gender] || langConfig.male;
     }
 
-    // 모달 제어 함수
-    function openSettings() {
-      if (!settingsModal) settingsModal = document.getElementById('settingsModal');
-      if (settingsModal) {
-        settingsModal.classList.remove('hidden');
-        if (apiKeyInput) apiKeyInput.value = appState.apiKey || '';
+    // 모달 제어 함수 (명시적 classList 제어로 수정)
+    window.openSettings = function() {
+      const modal = document.getElementById('settingsModal');
+      if (modal) {
+        modal.classList.remove('hidden');
+        const apiKeyEl = document.getElementById('apiKeyInput');
+        if (apiKeyEl) apiKeyEl.value = appState.apiKey || '';
         renderLangOptions();
       }
-    }
+    };
 
-    function closeSettings() {
-      if (!settingsModal) settingsModal = document.getElementById('settingsModal');
-      if (settingsModal) {
-        settingsModal.classList.add('hidden');
+    window.closeSettings = function() {
+      const modal = document.getElementById('settingsModal');
+      if (modal) {
+        modal.classList.add('hidden');
       }
-    }
+    };
 
-    function saveSettings() {
-      if (scenarioSelect) appState.scenario = scenarioSelect.value;
-      if (apiKeyInput) {
-        const key = apiKeyInput.value.trim();
+    window.saveSettings = function() {
+      const scenarioEl = document.getElementById('scenarioSelect');
+      const apiKeyEl = document.getElementById('apiKeyInput');
+      
+      if (scenarioEl) appState.scenario = scenarioEl.value;
+      if (apiKeyEl) {
+        const key = apiKeyEl.value.trim();
         appState.apiKey = key;
         setStoredKey(key);
       }
       closeSettings();
       const agent = getCurrentAgent();
       appendSystemMessage(`설정이 저장되었습니다: [튜터: ${agent.display} (${appState.lang.name}) | 배속 ${appState.speechRate}x | 기억 ${appState.contextTurns}턴 | 수준: ${appState.level}]`);
-    }
+    };
 
-    function handleSpeedChange(val) {
+    window.handleSpeedChange = function(val) {
       const fVal = parseFloat(val).toFixed(1);
       appState.speechRate = parseFloat(fVal);
       let desc = '보통';
       if (fVal < 0.9) desc = '느리게';
       if (fVal > 1.1) desc = '빠르게';
-      if (speedValueLabel) speedValueLabel.textContent = `${fVal}x (${desc})`;
-    }
+      const labelEl = document.getElementById('speedValueLabel');
+      if (labelEl) labelEl.textContent = `${fVal}x (${desc})`;
+    };
 
-    function handleContextChange(val) {
+    window.handleContextChange = function(val) {
       const iVal = parseInt(val, 10);
       appState.contextTurns = iVal;
       let desc = '균형';
       if (iVal <= 8) desc = '알뜰 토큰';
       else if (iVal >= 22) desc = '깊은 연속성';
-      if (contextValueLabel) contextValueLabel.textContent = `최근 ${iVal}개 턴 (${desc})`;
-    }
+      const labelEl = document.getElementById('contextValueLabel');
+      if (labelEl) labelEl.textContent = `최근 ${iVal}개 턴 (${desc})`;
+    };
 
-    function selectGender(gender) {
+    window.selectGender = function(gender) {
       appState.gender = gender;
       const maleBtn = document.getElementById('genderMaleBtn');
       const femaleBtn = document.getElementById('genderFemaleBtn');
@@ -390,9 +392,9 @@
         }
       }
       updateTutorUI();
-    }
+    };
 
-    function selectLevel(lvl) {
+    window.selectLevel = function(lvl) {
       appState.level = lvl;
       document.querySelectorAll('.level-btn').forEach(btn => {
         if (btn.textContent.includes(lvl)) {
@@ -401,26 +403,32 @@
           btn.className = 'level-btn py-2 text-xs rounded-xl border border-slate-200 text-slate-600 font-medium hover:bg-slate-50 cursor-pointer';
         }
       });
-    }
+    };
 
-    function setMicLanguage(mode) {
+    window.setMicLanguage = function(mode) {
       appState.micMode = mode;
-      if (mode === 'foreign') {
-        micLangForeign.className = 'px-2 py-0.5 rounded text-xs font-medium transition bg-white shadow-sm text-indigo-600 cursor-pointer';
-        micLangKorean.className = 'px-2 py-0.5 rounded text-xs font-medium transition text-slate-500 hover:text-slate-700 cursor-pointer';
-      } else {
-        micLangKorean.className = 'px-2 py-0.5 rounded text-xs font-medium transition bg-white shadow-sm text-indigo-600 cursor-pointer';
-        micLangForeign.className = 'px-2 py-0.5 rounded text-xs font-medium transition text-slate-500 hover:text-slate-700 cursor-pointer';
+      const langForeignEl = document.getElementById('micLangForeign');
+      const langKoreanEl = document.getElementById('micLangKorean');
+      
+      if (langForeignEl && langKoreanEl) {
+        if (mode === 'foreign') {
+          langForeignEl.className = 'px-2 py-0.5 rounded text-xs font-medium transition bg-white shadow-sm text-indigo-600 cursor-pointer';
+          langKoreanEl.className = 'px-2 py-0.5 rounded text-xs font-medium transition text-slate-500 hover:text-slate-700 cursor-pointer';
+        } else {
+          langKoreanEl.className = 'px-2 py-0.5 rounded text-xs font-medium transition bg-white shadow-sm text-indigo-600 cursor-pointer';
+          langForeignEl.className = 'px-2 py-0.5 rounded text-xs font-medium transition text-slate-500 hover:text-slate-700 cursor-pointer';
+        }
       }
       if (appState.isListening) {
-        stopListening();
-        startListening();
+        window.stopListening();
+        window.startListening();
       }
-    }
+    };
 
     function renderLangOptions() {
-      if (!langOptionsGrid) return;
-      langOptionsGrid.innerHTML = '';
+      const grid = document.getElementById('langOptionsGrid');
+      if (!grid) return;
+      grid.innerHTML = '';
       LANGUAGES.forEach(lang => {
         const isSelected = lang.id === appState.lang.id;
         const btn = document.createElement('button');
@@ -437,31 +445,39 @@
           updateHeaderBadge();
           updateTutorUI();
         };
-        langOptionsGrid.appendChild(btn);
+        grid.appendChild(btn);
       });
     }
 
     function updateHeaderBadge() {
-      if (currentLangBadge) currentLangBadge.innerHTML = `<span>${appState.lang.flag}</span> ${appState.lang.label}`;
-      if (micLangForeign) micLangForeign.textContent = `${appState.lang.name}로 말하기`;
+      const badge = document.getElementById('currentLangBadge');
+      const foreignBtn = document.getElementById('micLangForeign');
+      if (badge) badge.innerHTML = `<span>${appState.lang.flag}</span> ${appState.lang.label}`;
+      if (foreignBtn) foreignBtn.textContent = `${appState.lang.name}로 말하기`;
     }
 
     function updateTutorUI() {
       const agent = getCurrentAgent();
-      if (tutorNameText) tutorNameText.textContent = `튜터: ${agent.name}`;
-      if (activeTutorPreview) activeTutorPreview.textContent = agent.display;
+      const tName = document.getElementById('tutorNameText');
+      const tIcon = document.getElementById('tutorIcon');
+      const tBadge = document.getElementById('tutorBadge');
+      const tPreview = document.getElementById('activeTutorPreview');
+
+      if (tName) tName.textContent = `튜터: ${agent.name}`;
+      if (tPreview) tPreview.textContent = agent.display;
+      
       if (appState.gender === 'female') {
-        if (tutorIcon) tutorIcon.className = 'fa-solid fa-venus text-pink-500 text-[11px]';
-        if (tutorBadge) tutorBadge.className = 'bg-pink-50 text-pink-700 text-xs px-2.5 py-0.5 rounded-full font-semibold border border-pink-100 flex items-center gap-1';
-        if (activeTutorPreview) activeTutorPreview.className = 'text-xs font-bold text-pink-700 bg-pink-50 px-2 py-0.5 rounded-full border border-pink-100';
+        if (tIcon) tIcon.className = 'fa-solid fa-venus text-pink-500 text-[11px]';
+        if (tBadge) tBadge.className = 'bg-pink-50 text-pink-700 text-xs px-2.5 py-0.5 rounded-full font-semibold border border-pink-100 flex items-center gap-1';
+        if (tPreview) tPreview.className = 'text-xs font-bold text-pink-700 bg-pink-50 px-2 py-0.5 rounded-full border border-pink-100';
       } else {
-        if (tutorIcon) tutorIcon.className = 'fa-solid fa-mars text-indigo-600 text-[11px]';
-        if (tutorBadge) tutorBadge.className = 'bg-indigo-50 text-indigo-700 text-xs px-2.5 py-0.5 rounded-full font-semibold border border-indigo-100 flex items-center gap-1';
-        if (activeTutorPreview) activeTutorPreview.className = 'text-xs font-bold text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded-full border border-indigo-100';
+        if (tIcon) tIcon.className = 'fa-solid fa-mars text-indigo-600 text-[11px]';
+        if (tBadge) tBadge.className = 'bg-indigo-50 text-indigo-700 text-xs px-2.5 py-0.5 rounded-full font-semibold border border-indigo-100 flex items-center gap-1';
+        if (tPreview) tPreview.className = 'text-xs font-bold text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded-full border border-indigo-100';
       }
     }
 
-    // 음성 인식 초기화
+    // 음성 인식 초기화 (try-catch 적용)
     function initSpeechRecognition() {
       try {
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -472,45 +488,47 @@
 
           recognition.onstart = () => {
             appState.isListening = true;
-            if (micBtn) {
-              micBtn.classList.add('bg-red-500', 'text-white', 'wave-pulse');
-              micBtn.classList.remove('bg-slate-100', 'text-slate-700');
+            const btn = document.getElementById('micBtn');
+            const txt = document.getElementById('speechStatusText');
+            if (btn) {
+              btn.classList.add('bg-red-500', 'text-white', 'wave-pulse');
+              btn.classList.remove('bg-slate-100', 'text-slate-700');
             }
-            if (speechStatusText) speechStatusText.textContent = '듣고 있습니다... 말씀해주세요';
+            if (txt) txt.textContent = '듣고 있습니다... 말씀해주세요';
           };
 
           recognition.onresult = (event) => {
             const transcript = event.results[0][0].transcript;
-            if (textInput) textInput.value = transcript;
-            stopListening();
-            handleSubmitMessage();
+            const input = document.getElementById('textInput');
+            if (input) input.value = transcript;
+            window.stopListening();
+            window.handleSubmitMessage();
           };
 
           recognition.onerror = () => {
-            stopListening();
-            if (speechStatusText) speechStatusText.textContent = '음성 인식 실패 (다시 시도하거나 텍스트로 입력하세요)';
+            window.stopListening();
+            const txt = document.getElementById('speechStatusText');
+            if (txt) txt.textContent = '음성 인식 실패 (다시 시도하거나 텍스트로 입력하세요)';
           };
 
           recognition.onend = () => {
-            stopListening();
+            window.stopListening();
           };
-        } else if (micBtn) {
-          micBtn.title = '이 브라우저는 음성 인식을 지원하지 않습니다';
+        } else {
+          const btn = document.getElementById('micBtn');
+          if (btn) btn.title = '이 브라우저는 음성 인식을 지원하지 않습니다';
         }
       } catch (e) {
         console.warn('SpeechRecognition initialization error:', e);
       }
     }
 
-    function toggleMic() {
-      if (appState.isListening) {
-        stopListening();
-      } else {
-        startListening();
-      }
-    }
+    window.toggleMic = function() {
+      if (appState.isListening) window.stopListening();
+      else window.startListening();
+    };
 
-    function startListening() {
+    window.startListening = function() {
       if (!recognition) return;
       recognition.lang = appState.micMode === 'korean' ? 'ko-KR' : appState.lang.code;
       try {
@@ -518,19 +536,21 @@
       } catch (err) {
         console.warn('Recognition start error:', err);
       }
-    }
+    };
 
-    function stopListening() {
+    window.stopListening = function() {
       appState.isListening = false;
-      if (micBtn) {
-        micBtn.classList.remove('bg-red-500', 'text-white', 'wave-pulse');
-        micBtn.classList.add('bg-slate-100', 'text-slate-700');
+      const btn = document.getElementById('micBtn');
+      const txt = document.getElementById('speechStatusText');
+      if (btn) {
+        btn.classList.remove('bg-red-500', 'text-white', 'wave-pulse');
+        btn.classList.add('bg-slate-100', 'text-slate-700');
       }
-      if (speechStatusText) speechStatusText.textContent = '음성 또는 텍스트로 대화하세요';
+      if (txt) txt.textContent = '음성 또는 텍스트로 대화하세요';
       if (recognition) {
         try { recognition.stop(); } catch (e) {}
       }
-    }
+    };
 
     // TTS 음성 재생
     function speakText(text, langCode, buttonElement) {
@@ -568,25 +588,28 @@
     }
 
     function appendUserMessage(text) {
+      const container = document.getElementById('chatContainer');
       const wrapper = document.createElement('div');
       wrapper.className = 'flex justify-end';
       const bubble = document.createElement('div');
       bubble.className = 'bg-indigo-600 text-white rounded-2xl rounded-tr-sm px-4 py-2.5 max-w-[85%] text-sm shadow-sm leading-relaxed';
       bubble.textContent = text;
       wrapper.appendChild(bubble);
-      chatContainer.appendChild(wrapper);
-      chatContainer.scrollTop = chatContainer.scrollHeight;
+      container.appendChild(wrapper);
+      container.scrollTop = container.scrollHeight;
     }
 
     function appendSystemMessage(text) {
+      const container = document.getElementById('chatContainer');
       const div = document.createElement('div');
       div.className = 'text-center my-2';
       div.innerHTML = `<span class="inline-block bg-slate-200/80 text-slate-700 text-xs px-3.5 py-1.5 rounded-full font-medium shadow-sm">${text}</span>`;
-      chatContainer.appendChild(div);
-      chatContainer.scrollTop = chatContainer.scrollHeight;
+      container.appendChild(div);
+      container.scrollTop = container.scrollHeight;
     }
 
     function createTypingIndicator() {
+      const container = document.getElementById('chatContainer');
       const id = 'typing-' + Date.now();
       const div = document.createElement('div');
       div.id = id;
@@ -599,8 +622,8 @@
           <span class="w-2 h-2 rounded-full bg-slate-400 animate-bounce [animation-delay:0.4s]"></span>
         </div>
       `;
-      chatContainer.appendChild(div);
-      chatContainer.scrollTop = chatContainer.scrollHeight;
+      container.appendChild(div);
+      container.scrollTop = container.scrollHeight;
       return id;
     }
 
@@ -610,6 +633,7 @@
     }
 
     function appendAiResponse(data) {
+      const container = document.getElementById('chatContainer');
       const wrapper = document.createElement('div');
       wrapper.className = 'flex items-start gap-2.5 max-w-[92%] md:max-w-[85%]';
 
@@ -733,8 +757,8 @@
 
       wrapper.appendChild(avatar);
       wrapper.appendChild(card);
-      chatContainer.appendChild(wrapper);
-      chatContainer.scrollTop = chatContainer.scrollHeight;
+      container.appendChild(wrapper);
+      container.scrollTop = container.scrollHeight;
 
       const textToSpeak = (data.coaching && data.coaching.isNeeded) 
         ? data.coaching.recommendedPhrase 
@@ -752,7 +776,7 @@
       return div.innerHTML;
     }
 
-    // Gemini API 호출 (공식 표준 모델: gemini-2.0-flash, 실패 시 gemini-1.5-flash 폴백)
+    // Gemini API 호출 로직 (공식 무료 모델 적용 및 상세 에러 로깅)
     async function requestGeminiCoaching(userText) {
       if (!appState.apiKey) {
         throw new Error('API_KEY_REQUIRED');
@@ -821,7 +845,7 @@
         }
       };
 
-      // 공식 지원 모델 목록 (우선순위 순서)
+      // 구글 공식 지원 모델 리스트 (가장 빠르고 안정적인 최신 무료 모델)
       const candidateModels = ['gemini-2.0-flash', 'gemini-1.5-flash'];
       let lastErrorMessage = '';
 
@@ -836,15 +860,17 @@
 
           if (!response.ok) {
             const errText = await response.text();
-            let parsedErr;
-            try { parsedErr = JSON.parse(errText); } catch(e) {}
-            const apiMsg = parsedErr?.error?.message || errText;
+            let apiMsg = errText;
+            try { 
+              const parsedErr = JSON.parse(errText); 
+              apiMsg = parsedErr?.error?.message || errText;
+            } catch(e) {}
 
             if (response.status === 400 || response.status === 403) {
               throw new Error(`API_AUTH_ERROR: ${apiMsg}`);
             }
             lastErrorMessage = `[${model}] HTTP ${response.status}: ${apiMsg}`;
-            continue; // 다음 모델 시도
+            continue; // 에러 시 다음 모델 시도
           }
 
           const result = await response.json();
@@ -860,21 +886,24 @@
         }
       }
 
+      // 모든 모델 시도 후 실패 시 명확한 에러 반환
       throw new Error(lastErrorMessage || '모든 모델 응답에 실패했습니다.');
     }
 
-    async function handleSubmitMessage() {
-      const text = textInput ? textInput.value.trim() : '';
+    window.handleSubmitMessage = async function() {
+      const inputEl = document.getElementById('textInput');
+      const text = inputEl ? inputEl.value.trim() : '';
       if (!text) return;
 
-      if (textInput) textInput.value = '';
+      if (inputEl) inputEl.value = '';
       appendUserMessage(text);
       appState.history.push({ role: 'user', text: text });
 
       const typingId = createTypingIndicator();
-      if (sendBtn) {
-        sendBtn.disabled = true;
-        sendBtn.classList.add('opacity-50');
+      const sendButton = document.getElementById('sendBtn');
+      if (sendButton) {
+        sendButton.disabled = true;
+        sendButton.classList.add('opacity-50');
       }
 
       try {
@@ -890,60 +919,43 @@
         removeTypingIndicator(typingId);
         console.error('Coaching request failed:', err);
 
+        // 에러 메시지 화면 출력 로직 (상세화)
         if (err.message === 'API_KEY_REQUIRED' || !appState.apiKey) {
           appendSystemMessage('⚠️ 우측 상단 <strong>설정(⚙️)</strong>을 열고 <strong>Gemini API Key</strong>를 입력해 주세요.');
-          openSettings();
+          window.openSettings();
         } else if (err.message && err.message.startsWith('API_AUTH_ERROR')) {
           appendSystemMessage(`⚠️ <strong>API 키 오류:</strong> 구글 API 키가 올바르지 않거나 권한이 없습니다.<br><small class="text-slate-500">${escapeHtml(err.message)}</small>`);
         } else {
-          appendSystemMessage(`⚠️ 통신 오류가 발생했습니다: <span class="font-mono text-[11px]">${escapeHtml(err.message)}</span>`);
+          // 일시적인 통신 오류 대신 구체적인 사유 출력
+          appendSystemMessage(`⚠️ 통신 오류가 발생했습니다.<br><span class="font-mono text-[10px] text-red-500 break-all">${escapeHtml(err.message)}</span>`);
         }
       } finally {
-        if (sendBtn) {
-          sendBtn.disabled = false;
-          sendBtn.classList.remove('opacity-50');
+        if (sendButton) {
+          sendButton.disabled = false;
+          sendButton.classList.remove('opacity-50');
         }
       }
-    }
+    };
 
-    function clearAllChat() {
-      if (chatContainer) {
-        chatContainer.innerHTML = '';
+    window.clearAllChat = function() {
+      const container = document.getElementById('chatContainer');
+      if (container) {
+        container.innerHTML = '';
         appState.history = [];
         appendSystemMessage('대화가 초기화되었습니다. 새로운 회화를 시작하세요!');
       }
-    }
+    };
 
     // 모달 배경 클릭 시 닫기
     window.addEventListener('click', (e) => {
-      if (settingsModal && e.target === settingsModal) {
-        closeSettings();
+      const modal = document.getElementById('settingsModal');
+      if (modal && e.target === modal) {
+        window.closeSettings();
       }
     });
 
-    // 초기화
+    // 초기화 실행
     document.addEventListener('DOMContentLoaded', () => {
-      chatContainer = document.getElementById('chatContainer');
-      textInput = document.getElementById('textInput');
-      sendBtn = document.getElementById('sendBtn');
-      micBtn = document.getElementById('micBtn');
-      speechStatusText = document.getElementById('speechStatusText');
-      micLangForeign = document.getElementById('micLangForeign');
-      micLangKorean = document.getElementById('micLangKorean');
-      currentLangBadge = document.getElementById('currentLangBadge');
-      tutorBadge = document.getElementById('tutorBadge');
-      tutorNameText = document.getElementById('tutorNameText');
-      tutorIcon = document.getElementById('tutorIcon');
-      activeTutorPreview = document.getElementById('activeTutorPreview');
-      settingsModal = document.getElementById('settingsModal');
-      speedRange = document.getElementById('speedRange');
-      speedValueLabel = document.getElementById('speedValueLabel');
-      contextRange = document.getElementById('contextRange');
-      contextValueLabel = document.getElementById('contextValueLabel');
-      langOptionsGrid = document.getElementById('langOptionsGrid');
-      scenarioSelect = document.getElementById('scenarioSelect');
-      apiKeyInput = document.getElementById('apiKeyInput');
-
       initSpeechRecognition();
       updateHeaderBadge();
       updateTutorUI();
