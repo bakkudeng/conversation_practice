@@ -93,7 +93,7 @@
       <div class="space-y-1">
         <p class="font-semibold text-indigo-900">편하게 외국어로 말하거나 한국어로 물어보세요!</p>
         <p class="text-slate-600 text-xs leading-relaxed">
-          외국어로 말문이 막힐 땐 <strong>"이럴 때 영어로 뭐라고 해?"</strong> 처럼 한국어로 물어보세요. 적절한 표현과 발음 가이드를 친절하게 코칭해드립니다.
+          외국어로 말문이 막힐 땐 <strong>"이럴 때 영어로 뭐라고 해?"</strong> 처럼 한국어로 입력해보세요. 적절한 표현과 발음 가이드를 친절하게 코칭해드립니다.
         </p>
       </div>
     </div>
@@ -102,18 +102,24 @@
   <!-- Footer Input Area -->
   <footer class="bg-white border-t border-slate-200 p-3 md:p-4 z-20 flex-shrink-0">
     <div class="max-w-3xl mx-auto space-y-2">
-      <div class="flex items-center justify-between text-xs px-1 text-slate-500">
+      <!-- 🎤 변경된 음성 인식 언어 설정 UI -->
+      <div class="flex items-center justify-between text-xs px-1 text-slate-500 mb-1">
         <div class="flex items-center gap-2">
           <span class="inline-block w-2 h-2 rounded-full bg-emerald-500" id="connectionStatusDot"></span>
           <span id="speechStatusText">음성 또는 텍스트로 대화하세요</span>
         </div>
-        <div class="flex items-center gap-1 bg-slate-100 p-0.5 rounded-lg border border-slate-200">
-          <button type="button" id="micLangForeign" onclick="setMicLanguage('foreign')" class="px-2 py-0.5 rounded text-xs font-medium transition bg-white shadow-sm text-indigo-600 cursor-pointer">
-            외국어로 말하기
-          </button>
-          <button type="button" id="micLangKorean" onclick="setMicLanguage('korean')" class="px-2 py-0.5 rounded text-xs font-medium transition text-slate-500 hover:text-slate-700 cursor-pointer">
-            한국어로 묻기
-          </button>
+        
+        <div class="flex items-center gap-1.5 bg-slate-50 px-2 py-1.5 rounded-xl border border-slate-200 shadow-sm">
+          <i class="fa-solid fa-microphone-lines text-indigo-400 text-[11px]"></i>
+          <span class="text-[11px] font-bold text-slate-600 mr-0.5">음성 인식:</span>
+          <div class="flex items-center bg-slate-200/60 rounded-lg p-0.5 gap-0.5">
+            <button type="button" id="micLangForeign" onclick="setMicLanguage('foreign')" class="px-2.5 py-1 rounded-md text-[11px] font-bold transition bg-white shadow-sm text-indigo-600 cursor-pointer">
+              영어
+            </button>
+            <button type="button" id="micLangKorean" onclick="setMicLanguage('korean')" class="px-2.5 py-1 rounded-md text-[11px] font-medium transition text-slate-500 hover:text-slate-700 cursor-pointer">
+              한국어
+            </button>
+          </div>
         </div>
       </div>
 
@@ -139,7 +145,7 @@
     </div>
   </footer>
 
-  <!-- Settings Modal -->
+  <!-- Settings Modal (숨김 상태 제어를 hidden 클래스로 관리) -->
   <div id="settingsModal" class="hidden fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
     <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden border border-slate-100" id="settingsModalContent" onclick="event.stopPropagation()">
       <div class="px-5 py-4 border-b border-slate-100 flex items-center justify-between">
@@ -296,12 +302,14 @@
       return langConfig[appState.gender] || langConfig.male;
     }
 
+    // 모달창 열기 함수 (직접 호출)
     window.openSettings = function() {
       document.getElementById('settingsModal').classList.remove('hidden');
       document.getElementById('apiKeyInput').value = appState.apiKey || '';
       renderLangOptions();
     };
 
+    // 모달창 닫기 함수
     window.closeSettings = function() {
       document.getElementById('settingsModal').classList.add('hidden');
     };
@@ -348,16 +356,21 @@
       });
     };
 
+    // 음성 인식 언어 변경 UI 직관화
     window.setMicLanguage = function(mode) {
       appState.micMode = mode;
       const fEl = document.getElementById('micLangForeign');
       const kEl = document.getElementById('micLangKorean');
+      
+      const activeClass = 'px-2.5 py-1 rounded-md text-[11px] font-bold transition bg-white shadow-sm text-indigo-600 cursor-pointer';
+      const inactiveClass = 'px-2.5 py-1 rounded-md text-[11px] font-medium transition text-slate-500 hover:text-slate-700 cursor-pointer';
+
       if (mode === 'foreign') {
-        fEl.className = 'px-2 py-0.5 rounded text-xs font-medium transition bg-white shadow-sm text-indigo-600 cursor-pointer';
-        kEl.className = 'px-2 py-0.5 rounded text-xs font-medium transition text-slate-500 hover:text-slate-700 cursor-pointer';
+        fEl.className = activeClass;
+        kEl.className = inactiveClass;
       } else {
-        kEl.className = 'px-2 py-0.5 rounded text-xs font-medium transition bg-white shadow-sm text-indigo-600 cursor-pointer';
-        fEl.className = 'px-2 py-0.5 rounded text-xs font-medium transition text-slate-500 hover:text-slate-700 cursor-pointer';
+        kEl.className = activeClass;
+        fEl.className = inactiveClass;
       }
       if (appState.isListening) { stopListening(); startListening(); }
     };
@@ -378,7 +391,7 @@
 
     function updateHeaderBadge() {
       document.getElementById('currentLangBadge').innerHTML = `<span>${appState.lang.flag}</span> ${appState.lang.label}`;
-      document.getElementById('micLangForeign').textContent = `${appState.lang.name}로 말하기`;
+      document.getElementById('micLangForeign').textContent = appState.lang.name;
     }
 
     function updateTutorUI() {
@@ -397,6 +410,7 @@
       }
     }
 
+    // 마이크(음성 인식) 초기화 안전 블록
     function initSpeechRecognition() {
       try {
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -414,18 +428,21 @@
             stopListening();
             handleSubmitMessage();
           };
-          recognition.onerror = () => {
+          recognition.onerror = (e) => {
             stopListening();
-            document.getElementById('speechStatusText').textContent = '음성 인식 실패 (텍스트로 입력해주세요)';
+            document.getElementById('speechStatusText').textContent = '음성 인식 실패 (마이크 권한을 확인해주세요)';
           };
           recognition.onend = () => stopListening();
         }
-      } catch (e) {}
+      } catch (e) {
+        console.warn("음성 인식을 지원하지 않는 브라우저입니다.");
+      }
     }
 
     window.toggleMic = function() { appState.isListening ? stopListening() : startListening(); };
     window.startListening = function() {
       if (!recognition) return;
+      // 마이크 전용 언어 설정 적용
       recognition.lang = appState.micMode === 'korean' ? 'ko-KR' : appState.lang.code;
       try { recognition.start(); } catch (e) {}
     };
@@ -611,7 +628,7 @@
         }
       };
 
-      // ✨ [수정 완료]: 2026년 기준 404 에러가 나지 않는 가장 최신의 공식 모델명으로 변경했습니다.
+      // 2026년 기준 동작하는 공식 최신 모델 적용
       const candidateModels = ['gemini-3.8-flash', 'gemini-3.6-flash', 'gemini-3.5-flash'];
       let lastErr = '';
 
@@ -623,7 +640,7 @@
             const txt = await res.text();
             let msg = txt; try { msg = JSON.parse(txt).error.message; } catch(e){}
             if (res.status === 400 || res.status === 403) throw new Error(`[권한/요청 오류] ${msg}`);
-            lastErr = `[${model}] ${res.status}: ${msg}`;
+            lastErr = `[${model}] HTTP ${res.status}: ${msg}`;
             continue;
           }
           const data = await res.json();
@@ -633,7 +650,7 @@
           lastErr = e.message;
         }
       }
-      throw new Error(lastErr || '모든 최신 모델 응답에 실패했습니다.');
+      throw new Error(lastErr || '모든 모델 응답에 실패했습니다.');
     }
 
     window.handleSubmitMessage = async function() {
@@ -659,6 +676,7 @@
           appendSystemMessage('⚠️ 설정(⚙️)을 열고 Gemini API Key를 입력해 주세요.');
           openSettings();
         } else {
+          // 상세 에러 메시지 출력으로 변경
           appendSystemMessage(`⚠️ <strong>통신 오류가 발생했습니다:</strong><br><span class="font-mono text-[10px] text-red-500 break-all">${escapeHtml(err.message)}</span><br><br>※ API 키 설정 또는 일일 한도를 다시 확인해주세요.`);
         }
       } finally {
@@ -675,7 +693,9 @@
 
     window.addEventListener('click', (e) => {
       const modal = document.getElementById('settingsModal');
-      if (modal && e.target === modal) closeSettings();
+      if (modal && !modal.classList.contains('hidden') && e.target === modal) {
+        closeSettings();
+      }
     });
 
     document.addEventListener('DOMContentLoaded', () => {
