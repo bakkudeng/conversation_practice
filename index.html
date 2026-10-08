@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -51,6 +52,7 @@
 </head>
 <body class="bg-slate-50 text-slate-800 antialiased flex flex-col h-screen overflow-hidden">
 
+  <!-- Header Section -->
   <header class="bg-white border-b border-slate-200 px-4 py-3 flex items-center justify-between shadow-sm z-20 flex-shrink-0">
     <div class="flex items-center space-x-3">
       <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 to-indigo-400 flex items-center justify-center text-white shadow-md">
@@ -63,8 +65,8 @@
           <span id="currentLangBadge" class="bg-indigo-50 text-indigo-700 text-xs px-2.5 py-0.5 rounded-full font-semibold border border-indigo-100 flex items-center gap-1">
             <span>🇺🇸</span> 영어 (US)
           </span>
-          <span id="tutorBadge" class="bg-purple-50 text-purple-700 text-xs px-2.5 py-0.5 rounded-full font-semibold border border-purple-100 flex items-center gap-1">
-            <i class="fa-solid fa-user-tie text-[10px]" id="tutorIcon"></i>
+          <span id="tutorBadge" class="bg-indigo-50 text-indigo-700 text-xs px-2.5 py-0.5 rounded-full font-semibold border border-indigo-100 flex items-center gap-1">
+            <i class="fa-solid fa-mars text-[11px]" id="tutorIcon"></i>
             <span id="tutorNameText">튜터: James</span>
           </span>
         </div>
@@ -72,7 +74,7 @@
       </div>
     </div>
 
-    <!-- 우측 상단 액션 & 설정 버튼 -->
+    <!-- Right Header Controls -->
     <div class="flex items-center space-x-2">
       <button id="clearChatBtn" title="대화 내용 지우기" class="p-2.5 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-xl transition-all">
         <i class="fa-regular fa-trash-can text-base"></i>
@@ -84,6 +86,7 @@
     </div>
   </header>
 
+  <!-- Main Chat Container -->
   <main id="chatContainer" class="flex-1 overflow-y-auto custom-scrollbar p-4 md:p-6 space-y-4 max-w-3xl w-full mx-auto">
     <!-- Welcome Guide Banner -->
     <div class="bg-gradient-to-r from-indigo-50 to-purple-50 rounded-2xl p-4 border border-indigo-100/70 shadow-sm text-sm text-slate-700 flex items-start gap-3">
@@ -95,10 +98,9 @@
         </p>
       </div>
     </div>
-    
-    <!-- Dynamic Chat Messages Will Be Injected Here -->
   </main>
 
+  <!-- Footer Input Area -->
   <footer class="bg-white border-t border-slate-200 p-3 md:p-4 z-20 flex-shrink-0">
     <div class="max-w-3xl mx-auto space-y-2">
       <!-- Status & Input Mode Helper -->
@@ -120,7 +122,6 @@
 
       <!-- Main Input Field & Mic Controls -->
       <form id="messageForm" class="flex items-center gap-2">
-        <!-- Voice Input Toggle Button -->
         <button type="button" id="micBtn" title="음성 인식 시작/종료" class="w-11 h-11 flex-shrink-0 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center justify-center transition-all focus:outline-none">
           <i class="fa-solid fa-microphone text-base" id="micIcon"></i>
         </button>
@@ -142,6 +143,7 @@
     </div>
   </footer>
 
+  <!-- Settings Modal -->
   <div id="settingsModal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4 opacity-0 pointer-events-none transition-opacity duration-200">
     <div class="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden transform scale-95 transition-transform duration-200 border border-slate-100" id="settingsModalContent">
       <div class="px-5 py-4 border-b border-slate-100 flex items-center justify-between">
@@ -168,7 +170,7 @@
         <div>
           <div class="flex items-center justify-between mb-1.5">
             <label class="text-xs font-semibold text-slate-700">AI 튜터 성별 & 이름</label>
-            <span id="activeTutorPreview" class="text-xs font-bold text-purple-700 bg-purple-50 px-2 py-0.5 rounded-full border border-purple-100">
+            <span id="activeTutorPreview" class="text-xs font-bold text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded-full border border-indigo-100">
               James (제임스)
             </span>
           </div>
@@ -185,7 +187,7 @@
           <p class="text-[11px] text-slate-500 mt-1.5">※ 각 국가에서 가장 흔한 대표 이름(예: 미국 James/Emma, 일본 Ren/Yui 등)이 자동으로 매칭됩니다.</p>
         </div>
 
-        <!-- 3. 발음 배속 설정 (중요 요구사항) -->
+        <!-- 3. 발음 배속 설정 -->
         <div>
           <div class="flex items-center justify-between mb-1.5">
             <label for="speedRange" class="text-xs font-semibold text-slate-700">발음 배속 (말하기 속도)</label>
@@ -201,7 +203,7 @@
           </div>
         </div>
 
-        <!-- 3. AI 대화 기억 범위 (연속성 조절) -->
+        <!-- 4. AI 대화 기억 범위 (연속성 조절) -->
         <div>
           <div class="flex items-center justify-between mb-1.5">
             <label for="contextRange" class="text-xs font-semibold text-slate-700">AI 대화 기억 범위 (연속성)</label>
@@ -218,7 +220,7 @@
           <p class="text-[11px] text-slate-500 mt-1">※ 화면의 대화 기록은 지워지지 않으며, AI가 답변할 때 이전 내용을 얼마나 기억할지 결정합니다.</p>
         </div>
 
-        <!-- 4. 대화 시나리오/주제 -->
+        <!-- 5. 대화 시나리오/주제 -->
         <div>
           <label for="scenarioSelect" class="block text-xs font-semibold text-slate-700 mb-2">대화 상황 / 시나리오</label>
           <select id="scenarioSelect" class="w-full bg-slate-100 border border-slate-200 text-slate-700 text-xs rounded-xl p-2.5 outline-none focus:border-indigo-500">
@@ -230,7 +232,7 @@
           </select>
         </div>
 
-        <!-- 4. 학습자 수준 -->
+        <!-- 6. 학습자 수준 -->
         <div>
           <label class="block text-xs font-semibold text-slate-700 mb-2">나의 외국어 실력</label>
           <div class="grid grid-cols-3 gap-2" id="levelContainer">
@@ -238,6 +240,24 @@
             <button type="button" data-level="중급" class="level-btn py-2 text-xs rounded-xl border border-slate-200 text-slate-600 font-medium hover:bg-slate-50">중급</button>
             <button type="button" data-level="고급" class="level-btn py-2 text-xs rounded-xl border border-slate-200 text-slate-600 font-medium hover:bg-slate-50">고급</button>
           </div>
+        </div>
+
+        <!-- 7. 깃허브 배포용 API 키 설정 -->
+        <div class="pt-2 border-t border-slate-100">
+          <div class="flex items-center justify-between mb-1.5">
+            <label for="apiKeyInput" class="text-xs font-semibold text-slate-700">Gemini API 키 (깃허브 배포 시 필수)</label>
+            <a href="https://aistudio.google.com/app/apikey" target="_blank" class="text-[10px] text-indigo-600 hover:underline bg-indigo-50 px-2 py-0.5 rounded font-medium flex items-center gap-1">
+              <span>무료 발급받기</span>
+              <i class="fa-solid fa-arrow-up-right-from-square text-[9px]"></i>
+            </a>
+          </div>
+          <input 
+            type="password" 
+            id="apiKeyInput" 
+            placeholder="AI Studio에서 발급받은 API Key를 입력하세요" 
+            class="w-full bg-slate-100 border border-slate-200 text-slate-700 text-xs rounded-xl p-2.5 outline-none focus:border-indigo-500 font-mono"
+          />
+          <p class="text-[11px] text-slate-400 mt-1">※ 브라우저 로컬에 안전하게 저장되며 외부로 유출되지 않습니다.</p>
         </div>
       </div>
 
@@ -260,7 +280,7 @@
       { id: 'de', code: 'de-DE', name: '독일어', flag: '🇩🇪', label: '독일어' }
     ];
 
-    // 국가별 가장 흔한 대표 이름 목록 (남성 / 여성)
+    // Country Common Tutor Names
     const AGENT_NAMES = {
       en: {
         male: { display: 'James (제임스)', name: 'James' },
@@ -288,26 +308,26 @@
       }
     };
 
-    // Current State
+    // State Initialization
     let appState = {
       lang: LANGUAGES[0],
-      gender: 'male', // 'male' or 'female'
+      gender: 'male',
       speechRate: 1.0,
-      contextTurns: 14, // AI가 기억할 최근 대화 턴 수 (기본 14턴 = 왕복 7회)
+      contextTurns: 14,
       scenario: 'daily',
       level: '초급',
-      micMode: 'foreign', // 'foreign' or 'korean'
+      apiKey: localStorage.getItem('bakutoku_gemini_api_key') || '',
+      micMode: 'foreign',
       isListening: false,
       history: []
     };
 
-    // DOM References
+    // DOM Elements
     const chatContainer = document.getElementById('chatContainer');
     const messageForm = document.getElementById('messageForm');
     const textInput = document.getElementById('textInput');
     const sendBtn = document.getElementById('sendBtn');
     const micBtn = document.getElementById('micBtn');
-    const micIcon = document.getElementById('micIcon');
     const speechStatusText = document.getElementById('speechStatusText');
     const micLangForeign = document.getElementById('micLangForeign');
     const micLangKorean = document.getElementById('micLangKorean');
@@ -317,7 +337,7 @@
     const tutorIcon = document.getElementById('tutorIcon');
     const activeTutorPreview = document.getElementById('activeTutorPreview');
     
-    // Modal References
+    // Modal Elements
     const settingsModal = document.getElementById('settingsModal');
     const settingsModalContent = document.getElementById('settingsModalContent');
     const openSettingsBtn = document.getElementById('openSettingsBtn');
@@ -329,16 +349,35 @@
     const contextValueLabel = document.getElementById('contextValueLabel');
     const langOptionsGrid = document.getElementById('langOptionsGrid');
     const scenarioSelect = document.getElementById('scenarioSelect');
+    const apiKeyInput = document.getElementById('apiKeyInput');
     const clearChatBtn = document.getElementById('clearChatBtn');
 
     let recognition = null;
-    let isSpeaking = false;
 
-    // Helper to get active tutor info
     function getCurrentAgent() {
       const langConfig = AGENT_NAMES[appState.lang.id] || AGENT_NAMES.en;
       return langConfig[appState.gender] || langConfig.male;
     }
+
+    // Speech Recognition Setup
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (SpeechRecognition) {
+      recognition = new SpeechRecognition();
+      recognition.continuous = false;
+      recognition.interimResults = false;
+
+      recognition.onstart = () => {
+        appState.isListening = true;
+        micBtn.classList.add('bg-red-500', 'text-white', 'wave-pulse');
+        micBtn.classList.remove('bg-slate-100', 'text-slate-700');
+        speechStatusText.textContent = '듣고 있습니다... 말씀해주세요';
+      };
+
+      recognition.onresult = (event) => {
+        const transcript = event.results[0][0].transcript;
+        textInput.value = transcript;
+        stopListening();
+        handleSubmitMessage();
       };
 
       recognition.onerror = (event) => {
@@ -357,7 +396,6 @@
 
     function startListening() {
       if (!recognition) return;
-      // Configure STT language based on active mic mode
       recognition.lang = appState.micMode === 'korean' ? 'ko-KR' : appState.lang.code;
       try {
         recognition.start();
@@ -376,58 +414,42 @@
       }
     }
 
+    // TTS Audio Output
     function speakText(text, langCode, buttonElement) {
-      if (!('speechSynthesis' in window)) {
-        return;
-      }
+      if (!('speechSynthesis' in window)) return;
 
-      // Stop previous utterance
       window.speechSynthesis.cancel();
-
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.lang = langCode || appState.lang.code;
-      utterance.rate = appState.speechRate; // User defined speed (0.6x - 1.4x)
+      utterance.rate = appState.speechRate;
 
-      // Find best matching voice
       const voices = window.speechSynthesis.getVoices();
       let matchedVoice = null;
-
-      // Filter by language prefix
       const langVoices = voices.filter(v => v.lang.replace('_', '-').startsWith(utterance.lang.substring(0, 2)));
       
-      // Attempt to match gender based on voice name keywords
       if (langVoices.length > 0) {
         if (appState.gender === 'female') {
           matchedVoice = langVoices.find(v => /(female|woman|girl|zira|samantha|kyoko|victoria|karen|amelie|anna|yuna|tingting)/i.test(v.name));
         } else {
           matchedVoice = langVoices.find(v => /(male|man|boy|david|alex|george|thomas|daniel|otoiawase|yannick)/i.test(v.name));
         }
-        if (!matchedVoice) {
-          matchedVoice = langVoices[0];
-        }
+        if (!matchedVoice) matchedVoice = langVoices[0];
       }
 
-      if (matchedVoice) {
-        utterance.voice = matchedVoice;
-      }
+      if (matchedVoice) utterance.voice = matchedVoice;
 
       if (buttonElement) {
         const icon = buttonElement.querySelector('i');
         const origClass = icon ? icon.className : '';
         if (icon) icon.className = 'fa-solid fa-volume-high text-indigo-600 animate-pulse';
 
-        utterance.onend = () => {
-          if (icon) icon.className = origClass;
-        };
-        utterance.onerror = () => {
-          if (icon) icon.className = origClass;
-        };
+        utterance.onend = () => { if (icon) icon.className = origClass; };
+        utterance.onerror = () => { if (icon) icon.className = origClass; };
       }
 
       window.speechSynthesis.speak(utterance);
     }
 
-    // Ensure voices are loaded
     if ('speechSynthesis' in window) {
       window.speechSynthesis.onvoiceschanged = () => {
         window.speechSynthesis.getVoices();
@@ -468,13 +490,15 @@
       if (appState.gender === 'female') {
         tutorIcon.className = 'fa-solid fa-venus text-pink-500 text-[11px]';
         tutorBadge.className = 'bg-pink-50 text-pink-700 text-xs px-2.5 py-0.5 rounded-full font-semibold border border-pink-100 flex items-center gap-1';
+        activeTutorPreview.className = 'text-xs font-bold text-pink-700 bg-pink-50 px-2 py-0.5 rounded-full border border-pink-100';
       } else {
         tutorIcon.className = 'fa-solid fa-mars text-indigo-600 text-[11px]';
         tutorBadge.className = 'bg-indigo-50 text-indigo-700 text-xs px-2.5 py-0.5 rounded-full font-semibold border border-indigo-100 flex items-center gap-1';
+        activeTutorPreview.className = 'text-xs font-bold text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded-full border border-indigo-100';
       }
     }
 
-    // Gender selection buttons in modal
+    // Modal Events
     document.querySelectorAll('.gender-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         const gender = btn.dataset.gender;
@@ -524,6 +548,7 @@
         settingsModal.classList.remove('opacity-0', 'pointer-events-none');
         settingsModalContent.classList.remove('scale-95');
         settingsModalContent.classList.add('scale-100');
+        if (apiKeyInput) apiKeyInput.value = appState.apiKey || '';
         renderLangOptions();
       } else {
         settingsModal.classList.add('opacity-0', 'pointer-events-none');
@@ -540,10 +565,14 @@
 
     saveSettingsBtn.addEventListener('click', () => {
       appState.scenario = scenarioSelect.value;
+      if (apiKeyInput) {
+        const key = apiKeyInput.value.trim();
+        appState.apiKey = key;
+        localStorage.setItem('bakutoku_gemini_api_key', key);
+      }
       toggleSettingsModal(false);
       
       const agent = getCurrentAgent();
-      // Add system announcement
       appendSystemMessage(`설정이 업데이트되었습니다: [튜터: ${agent.display} (${appState.lang.name}) | 배속 ${appState.speechRate}x | 기억 ${appState.contextTurns}턴 | 수준: ${appState.level}]`);
     });
 
@@ -607,7 +636,7 @@
       const card = document.createElement('div');
       card.className = 'bg-white border border-slate-200 rounded-2xl rounded-tl-sm p-4 shadow-sm space-y-3 w-full';
 
-      // 튜터 이름 헤더 바
+      // Header Bar
       const tutorHeader = document.createElement('div');
       tutorHeader.className = 'flex items-center justify-between pb-1.5 border-b border-slate-100 text-xs text-slate-500';
       tutorHeader.innerHTML = `
@@ -619,7 +648,7 @@
       `;
       card.appendChild(tutorHeader);
 
-      // 1. 한국어 질문에 대한 코칭 카드가 필요한 경우 (유저가 모를 때 한국어로 질문함)
+      // Coaching Card
       if (data.coaching && data.coaching.isNeeded) {
         const coachBox = document.createElement('div');
         coachBox.className = 'bg-amber-50/70 border border-amber-200 rounded-xl p-3.5 space-y-2';
@@ -647,7 +676,6 @@
           ` : ''}
         `;
 
-        // Listen button for recommended phrase
         const coachAudioBtn = coachBox.querySelector('.coach-audio-btn');
         coachAudioBtn.addEventListener('click', () => {
           speakText(data.coaching.recommendedPhrase, appState.lang.code, coachAudioBtn);
@@ -656,7 +684,7 @@
         card.appendChild(coachBox);
       }
 
-      // 2. 대화 이어가기 응답 (외국어 답변)
+      // Foreign Response
       if (data.foreignText) {
         const replyBox = document.createElement('div');
         replyBox.className = 'space-y-2';
@@ -681,7 +709,7 @@
         mainTextRow.appendChild(replayBtn);
         replyBox.appendChild(mainTextRow);
 
-        // 번역 토글 버튼
+        // Korean Translation Toggle
         if (data.koreanTranslation) {
           const transContainer = document.createElement('div');
           transContainer.className = 'text-xs';
@@ -710,7 +738,7 @@
         card.appendChild(replyBox);
       }
 
-      // 3. 사용자 외국어 문장에 대한 피드백/교정 팁 (있을 경우)
+      // Correction Tip
       if (data.correctionTip && data.correctionTip.trim().length > 0) {
         const tipBox = document.createElement('div');
         tipBox.className = 'text-xs bg-indigo-50/60 border border-indigo-100 rounded-xl p-2.5 text-indigo-900 flex items-start gap-2';
@@ -726,7 +754,7 @@
       chatContainer.appendChild(wrapper);
       chatContainer.scrollTop = chatContainer.scrollHeight;
 
-      // Automatically speak the main foreign answer or recommended phrase
+      // Auto speak
       const textToSpeak = (data.coaching && data.coaching.isNeeded) 
         ? data.coaching.recommendedPhrase 
         : data.foreignText;
@@ -744,9 +772,11 @@
     }
 
     async function requestGeminiCoaching(userText) {
-      const apiKey = ""; // Handled dynamically by canvas runtime
-      const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
+      if (!appState.apiKey) {
+        throw new Error('API_KEY_REQUIRED');
+      }
 
+      const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${appState.apiKey}`;
       const agent = getCurrentAgent();
       const genderKorean = appState.gender === 'female' ? '여성' : '남성';
 
@@ -773,7 +803,6 @@
    - coaching.isNeeded는 false로 두세요.
 3. 반드시 지정된 JSON 구조로만 반환하세요.`;
 
-      // Build conversation turns
       const contents = appState.history.slice(-appState.contextTurns).map(turn => ({
         role: turn.role,
         parts: [{ text: turn.text }]
@@ -812,7 +841,6 @@
         }
       };
 
-      // Exponential backoff fetch
       let delay = 1000;
       for (let attempt = 0; attempt < 3; attempt++) {
         try {
@@ -823,7 +851,8 @@
           });
 
           if (!response.ok) {
-            throw new Error(`HTTP error ${response.status}`);
+            const errBody = await response.text();
+            throw new Error(`HTTP_${response.status}: ${errBody}`);
           }
 
           const result = await response.json();
@@ -857,7 +886,6 @@
         removeTypingIndicator(typingId);
         appendAiResponse(responseData);
 
-        // Keep model turn in history
         appState.history.push({
           role: 'model',
           text: `[외국어 답변]: ${responseData.foreignText} ${responseData.coaching?.recommendedPhrase ? '[추천표현]: ' + responseData.coaching.recommendedPhrase : ''}`
@@ -865,7 +893,12 @@
       } catch (err) {
         removeTypingIndicator(typingId);
         console.error('Coaching request failed:', err);
-        appendSystemMessage('⚠️ 일시적인 통신 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
+        if (err.message === 'API_KEY_REQUIRED' || !appState.apiKey) {
+          appendSystemMessage('⚠️ 우측 상단 <strong>설정(⚙️)</strong>을 열고 <strong>Gemini API Key</strong>를 입력해 주셔야 대화가 가능합니다.');
+          toggleSettingsModal(true);
+        } else {
+          appendSystemMessage('⚠️ 일시적인 통신 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
+        }
       } finally {
         sendBtn.disabled = false;
         sendBtn.classList.remove('opacity-50');
@@ -877,7 +910,6 @@
       handleSubmitMessage();
     });
 
-    // Mic button click
     micBtn.addEventListener('click', () => {
       if (appState.isListening) {
         stopListening();
@@ -886,7 +918,6 @@
       }
     });
 
-    // Mic language toggle
     micLangForeign.addEventListener('click', () => {
       appState.micMode = 'foreign';
       micLangForeign.className = 'px-2 py-0.5 rounded text-xs font-medium transition bg-white shadow-sm text-indigo-600';
@@ -907,7 +938,6 @@
       }
     });
 
-    // Clear chat
     clearChatBtn.addEventListener('click', () => {
       chatContainer.innerHTML = '';
       appState.history = [];
@@ -918,7 +948,6 @@
       updateHeaderBadge();
       updateTutorUI();
       const agent = getCurrentAgent();
-      // Initial Welcome Bot Message with Tutor Persona
       appendAiResponse({
         isKoreanInput: false,
         foreignText: `Hello! I'm ${agent.name}, your conversation tutor. Feel free to chat in English or ask me anything in Korean whenever you get stuck!`,
@@ -931,3 +960,4 @@
   </script>
 </body>
 </html>
+```
